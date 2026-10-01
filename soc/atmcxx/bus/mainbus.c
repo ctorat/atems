@@ -4,6 +4,7 @@
  */
 
 #include <bus/mainbus.h>
+#include <io/romvar.h>
 #include <common/comdef.h>
 #include <errno.h>
 
@@ -12,7 +13,7 @@ static struct mainbus_endpoint memory_map[] = {
     {
         0x000000000000,
         0x000000002000,
-        NULL
+        rom_bus_read
     },
 
     /* System-level cache */
