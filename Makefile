@@ -18,7 +18,8 @@ CFLAGS =						\
 	-Wall						\
 	-pedantic					\
 	-Ihead						\
-	-Isoc/$(CONFIG_CHIP)/head
+	-Isoc/$(CONFIG_CHIP)/head	\
+	-MMD
 
 .PHONY: all
 all: $(OFILES)
