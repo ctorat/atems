@@ -7,6 +7,7 @@ CONFIG_CHIP = atmcxx
 
 CFILES = $(shell find core/ -name "*.c")
 CFILES += $(shell find io/ -name "*.c")
+CFILES += $(shell find bus/ -name "*.c")
 CFILES += $(shell find soc/$(CONFIG_CHIP)/ -name "*.c")
 OFILES = $(CFILES:.c=.o)
 DFILES = $(CFILES:.c=.d)
