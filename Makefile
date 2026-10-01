@@ -3,7 +3,7 @@
 # Provided under the BSD-3 clause.
 #
 
-CONFIG_CHIP = atmc02
+CONFIG_CHIP = atmcxx
 
 CFILES = $(shell find core/ -name "*.c")
 CFILES += $(shell find io/ -name "*.c")
