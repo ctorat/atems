@@ -25,10 +25,24 @@ struct mainbus_endpoint {
 };
 
 /*
+ * Read data from a specific endpoint on a mainbus
+ *
+ * @addr:  Address of endpoint
+ * @dest:  Destination buffer to read into
+ * @off:   Offset to read from
+ * @len:   Number of bytes to read
+ *
+ * Returns zero on success
+ */
+int mainbus_read(uintptr_t addr, void *dest, size_t off, size_t len);
+
+/*
  * Resolve an endpoint on the mainbus by using its address
  *
  * @addr:   Address to resolve into endpoint
  * @ep_res: Endpoint result is written here
+ *
+ * XXX: This function is chip specific
  *
  * Returns zero on success
  */
