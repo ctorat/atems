@@ -4,11 +4,13 @@
  */
 
 #include <sys/mman.h>
+#include <cul/soc.h>
+#include <cul/chipcom.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <cul/chipcom.h>
 
 /*
  * Represents a ROM file
@@ -28,6 +30,7 @@ help(void)
     printf("usage: ./atems [flags]\n");
     printf("[-h]    Display this help menu\n");
     printf("[-f]    Firmware path [required]\n");
+    printf("[-m]    Memory capacity in bytes\n");
 }
 
 /*
@@ -36,7 +39,7 @@ help(void)
  * @rfp:  Pointer to ROM file descriptor
  */
 static void
-vm_run(const struct rom_file *rfp)
+vm_run(const struct rom_file *rfp, const struct soc_init_param *param)
 {
     struct soc_info soc;
     int error;
@@ -54,11 +57,13 @@ vm_run(const struct rom_file *rfp)
         return;
     }
 
-    error = chip_init_io(&soc);
+    error = soc_init(&soc, param);
     if (error < 0) {
-        perror("chip_init_io");
+        perror("soc_init");
         return;
     }
+
+    soc_destroy(&soc);
 }
 
 /*
@@ -126,6 +131,7 @@ rom_file_open(const char *rom_path, struct rom_file *res)
 int
 main(int argc, char **argv)
 {
+    struct soc_init_param param = {0};
     const char *fw_path = NULL;
     struct rom_file rom_file;
     int opt, error;
@@ -141,7 +147,11 @@ main(int argc, char **argv)
         return -1;
     }
 
-    while ((opt = getopt(argc, argv, "hf:")) != -1) {
+    /* Initialize SoC defaults */
+    param.ram_cap = 0x40000000;
+
+    /* Parse arguments */
+    while ((opt = getopt(argc, argv, "hf:m:")) != -1) {
         switch (opt) {
         case 'h':
             help();
@@ -149,6 +159,13 @@ main(int argc, char **argv)
         case 'f':
             if ((fw_path = strdup(optarg)) == NULL) {
                 printf("fatal: out of memory for fw path\n");
+                return -1;
+            }
+
+            break;
+        case 'm':
+            if ((param.ram_cap = atoi(optarg)) < 0x400000) {
+                printf("fatal: RAM capacity must be greater than 4 MiB\n");
                 return -1;
             }
 
@@ -167,7 +184,7 @@ main(int argc, char **argv)
         return -1;
     }
 
-    vm_run(&rom_file);
+    vm_run(&rom_file, &param);
     rom_file_close(&rom_file);
     return 0;
 }

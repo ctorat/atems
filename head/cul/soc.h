@@ -12,12 +12,42 @@
  * Represents a System-on-Chip
  *
  * @rom:    On-chip ROM
+ * @data:   Chip specific data
  *
  * XXX: Must not fall out of scope for the entire operation
  *      of the VM.
  */
 struct soc_info {
     struct romdev rom;
+    void *data;
 };
+
+/*
+ * SoC initialization parameters
+ *
+ * @ram_cap:  RAM capacity
+ */
+struct soc_init_param {
+    size_t ram_cap;
+};
+
+/*
+ * Initialize the SoC descriptor
+ *
+ * @soc:    SoC to initialize
+ * @param:  Initialization parameters
+ *
+ * XXX: This function is chip specific
+ *
+ * Returns zero on success
+ */
+int soc_init(struct soc_info *soc, const struct soc_init_param *param);
+
+/*
+ * Destroy a SoC descriptor
+ *
+ * @soc:  SoC descriptor to destroy
+ */
+void soc_destroy(struct soc_info *soc);
 
 #endif  /* !CUL_SOC_H */

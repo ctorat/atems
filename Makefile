@@ -14,10 +14,11 @@ DFILES = $(CFILES:.c=.d)
 
 CC = gcc
 
-CFLAGS =		\
-	-Wall		\
-	-pedantic	\
-	-Ihead
+CFLAGS =						\
+	-Wall						\
+	-pedantic					\
+	-Ihead						\
+	-Isoc/$(CONFIG_CHIP)/head
 
 .PHONY: all
 all: $(OFILES)
