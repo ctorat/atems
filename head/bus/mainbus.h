@@ -30,6 +30,6 @@ struct mainbus_endpoint {
  *
  * Returns zero on success
  */
-int mainbus_resolve(uintptr_t addr, struct mainbus_endpoint *ep_res);
+int mainbus_resolve(uintptr_t addr, struct mainbus_endpoint **ep_res);
 
 #endif  /* !BUS_MAINBUS_H */

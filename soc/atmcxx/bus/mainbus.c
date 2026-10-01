@@ -25,7 +25,7 @@ static struct mainbus_endpoint memory_map[] = {
 };
 
 int
-mainbus_resolve(uintptr_t addr, struct mainbus_endpoint *ep_res)
+mainbus_resolve(uintptr_t addr, struct mainbus_endpoint **ep_res)
 {
     struct mainbus_endpoint *ep;
     size_t i;
@@ -38,7 +38,7 @@ mainbus_resolve(uintptr_t addr, struct mainbus_endpoint *ep_res)
     for (i = 0; i < NELEM(memory_map); ++i) {
         ep = &memory_map[i];
         if (addr >= ep->start && addr < ep->end) {
-            *ep_res = *ep;
+            *ep_res = ep;
             return 0;
         }
     }
