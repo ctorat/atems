@@ -14,11 +14,13 @@
  *
  * @start:  Start address of endpoint
  * @end:    Non-inclusive end address of endpoint
+ * @data:   Endpoint specific data
  * @read:   Read hook
  */
 struct mainbus_endpoint {
     uintptr_t start;
     uintptr_t end;
+    void *data;
     int(*read)(void *data, void *buf, size_t off, size_t len);
 };
 

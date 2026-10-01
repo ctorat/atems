@@ -13,6 +13,7 @@ static struct mainbus_endpoint memory_map[] = {
     {
         0x000000000000,
         0x000000002000,
+        NULL,
         rom_bus_read
     },
 
@@ -20,6 +21,7 @@ static struct mainbus_endpoint memory_map[] = {
     {
         0x000000005000,
         0x000000105000,
+        NULL,
         NULL
     }
 };
