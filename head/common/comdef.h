@@ -11,4 +11,7 @@
 #define ALIGN(n)    ATTR(aligned((n)))
 #define NOTHING     (void)0
 
+/* Obtain the number of elements in an array */
+#define NELEM(x) (sizeof(x) / sizeof(x[0]))
+
 #endif  /* !COMMON_COMDEF_H */
