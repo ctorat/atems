@@ -47,6 +47,13 @@ struct lazybuf {
 int lazybuf_init(struct lazybuf *lp, size_t cap);
 
 /*
+ * Destroy a lazy buffer
+ *
+ * @lp: Lazy buffer to destroy
+ */
+void lazybuf_destroy(struct lazybuf *lp);
+
+/*
  * Write to a given number of bytes at a specific offset within
  * a lazy buffer.
  *

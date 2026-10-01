@@ -30,6 +30,22 @@ lazybuf_init(struct lazybuf *lp, size_t cap)
     return 0;
 }
 
+void
+lazybuf_destroy(struct lazybuf *lp)
+{
+    if (lp == NULL) {
+        return;
+    }
+
+    if (lp->data != NULL) {
+        free(lp->data);
+    }
+
+    lp->data = NULL;
+    lp->cap = 0;
+    lp->size = 0;
+}
+
 int
 lazybuf_write(struct lazybuf *lp, size_t off, size_t count, const void *source)
 {
