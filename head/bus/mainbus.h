@@ -19,7 +19,7 @@
 struct mainbus_endpoint {
     uintptr_t start;
     uintptr_t end;
-    int(*read)(void *buf, size_t off, size_t len);
+    int(*read)(void *data, void *buf, size_t off, size_t len);
 };
 
 /*
