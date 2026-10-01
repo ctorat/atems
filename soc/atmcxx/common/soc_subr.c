@@ -46,16 +46,20 @@ soc_init(struct soc_info *soc, const struct soc_init_param *param)
     return 0;
 }
 
-/*
- * TODO: Destroy the RAM lazy buffer
- */
 void
 soc_destroy(struct soc_info *soc)
 {
+    struct chip_soc_info *chip_soc;
+
     if (soc == NULL) {
         return;
     }
 
+    if ((chip_soc = soc->data) == NULL) {
+        return;
+    }
+
+    lazybuf_destroy(&chip_soc->ram);
     free(soc->data);
     soc->data = NULL;
 }
