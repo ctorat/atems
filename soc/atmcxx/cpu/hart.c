@@ -166,6 +166,7 @@ cpu_run_hart(struct cpu_hart *hart)
 {
     struct cpu_regs *regs;
     uint8_t opcode;
+    size_t nr_cycle = 0;
     int error, retval = 0;
     inst_t inst;
 
@@ -196,6 +197,13 @@ cpu_run_hart(struct cpu_hart *hart)
         }
 
         opcode = inst & 0xFF;
+
+        /* Don't cause log spam if we are waiting */
+        if (opcode != OPCODE_WFI) {
+            printf("-- cycle %ld --\n", nr_cycle++);
+            hart_dump_regs(regs);
+        }
+
         switch (opcode) {
         case OPCODE_NOP:
             regs->pc += sizeof(inst);
@@ -210,11 +218,6 @@ cpu_run_hart(struct cpu_hart *hart)
         default:
             trace_fatal("undefined opcode %02X\n", opcode);
             return -1;
-        }
-
-        /* Don't cause log spam if we are waiting */
-        if (opcode != OPCODE_WFI) {
-            hart_dump_regs(regs);
         }
     }
 
