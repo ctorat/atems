@@ -122,6 +122,29 @@ hart_read_reg(struct cpu_regs *regs, reg_t id)
 }
 
 /*
+ * Write a specific value to a register
+ *
+ * @regs:   Register set to write to
+ * @id:     ID of register to write to
+ * @value:  Value to write to register
+ */
+static void
+hart_write_reg(struct cpu_regs *regs, reg_t id, uint64_t value)
+{
+    uint64_t *regp;
+
+    if (regs == NULL || id >= REG_MAX) {
+        return;
+    }
+
+    if ((regp = hart_get_reg(regs, id)) == NULL) {
+        return;
+    }
+
+    *regp = value;
+}
+
+/*
  * Dump the processor registers
  *
  * @regs: Registers to dump
@@ -144,6 +167,37 @@ hart_dump_regs(struct cpu_regs *regs)
     }
 
     printf("\n");
+}
+
+/*
+ * Decode an execute an ADDI instruction
+ *
+ * @hart: Current hart
+ * @inst: Instruction to decode and execute
+ */
+static int
+hart_dexec_addi(struct cpu_hart *hart, inst_t inst)
+{
+    int64_t value;
+    union inst_a_type a_type = {0};
+
+    /* Is this actually an ADDI instruction? */
+    a_type.inst = inst;
+    if (a_type.opcode != OPCODE_ADDI) {
+        trace_fatal("internal emulation error : unmatched opcodes\n");
+        return -1;
+    }
+
+    if (a_type.rd >= REG_MAX) {
+        trace_fatal("malformed instruction\n");
+        return -1;
+    }
+
+    /* Perform the operation and writeback */
+    value = (int64_t)hart_read_reg(&hart->regs, a_type.rd);
+    value += a_type.imm;
+    hart_write_reg(&hart->regs, a_type.rd, value);
+    return 0;
 }
 
 int
@@ -213,6 +267,13 @@ cpu_run_hart(struct cpu_hart *hart)
             break;
         case OPCODE_SPW:
             /* Unused in the emulator (for now at least) */
+            regs->pc += sizeof(inst);
+            break;
+        case OPCODE_ADDI:
+            if ((error = hart_dexec_addi(hart, inst)) < 0) {
+                return error;
+            }
+
             regs->pc += sizeof(inst);
             break;
         default:
