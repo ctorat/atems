@@ -26,9 +26,11 @@ struct soc_info {
  * SoC initialization parameters
  *
  * @ram_cap:  RAM capacity
+ * @nr_hart:  Number of harts
  */
 struct soc_init_param {
     size_t ram_cap;
+    size_t nr_hart;
 };
 
 /*

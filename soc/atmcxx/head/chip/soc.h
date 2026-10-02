@@ -9,14 +9,17 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <common/lazybuf.h>
+#include <cpu/hart.h>
 
 /*
  * Chip specific SoC information
  *
- * @ram: Random access memory
+ * @ram:    Random access memory
+ * @harts:  Processor execution units
  */
 struct chip_soc_info {
     struct lazybuf ram;
+    struct cpu_hart *harts;
 };
 
 #endif  /* !CHIP_SOC_H */

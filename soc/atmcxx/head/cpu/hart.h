@@ -40,4 +40,13 @@ struct cpu_hart {
     struct cpu_regs regs;
 };
 
+/*
+ * Initialize a hardware thread
+ *
+ * @hart:  HART to initialize
+ *
+ * Returns zero on success.
+ */
+int cpu_init_hart(struct cpu_hart *hart);
+
 #endif  /* !CPU_HART_H */

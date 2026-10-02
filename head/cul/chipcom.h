@@ -11,6 +11,9 @@
 /* XXX: This should be made per-chip and lowered */
 #define CHIP_ROM_CAP 0x40000000
 
+/* Maximum number of processors */
+#define CHIP_MAX_HART 16
+
 /*
  * Initialize I/O devices that are alongside the chip
  *

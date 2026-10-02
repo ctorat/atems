@@ -31,6 +31,7 @@ help(void)
     printf("[-h]    Display this help menu\n");
     printf("[-f]    Firmware path [required]\n");
     printf("[-m]    Memory capacity in bytes\n");
+    printf("[-p]    Number of processors\n");
 }
 
 /*
@@ -149,9 +150,10 @@ main(int argc, char **argv)
 
     /* Initialize SoC defaults */
     param.ram_cap = 0x40000000;
+    param.nr_hart = 2;
 
     /* Parse arguments */
-    while ((opt = getopt(argc, argv, "hf:m:")) != -1) {
+    while ((opt = getopt(argc, argv, "hf:m:p:")) != -1) {
         switch (opt) {
         case 'h':
             help();
@@ -166,6 +168,18 @@ main(int argc, char **argv)
         case 'm':
             if ((param.ram_cap = atoi(optarg)) < 0x400000) {
                 printf("fatal: RAM capacity must be greater than 4 MiB\n");
+                return -1;
+            }
+
+            break;
+        case 'p':
+            if ((param.nr_hart = atoi(optarg)) == 0) {
+                printf("fatal: processor count must not bt zero\n");
+                return -1;
+            }
+
+            if (param.nr_hart > CHIP_MAX_HART) {
+                printf("fatal: number of processors must not exceed %d\n", CHIP_MAX_HART);
                 return -1;
             }
 

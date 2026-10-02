@@ -5,10 +5,42 @@
 
 #include <cul/soc.h>
 #include <cul/chipcom.h>
+#include <cpu/hart.h>
 #include <chip/soc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+
+static int
+soc_init_harts(struct chip_soc_info *chip_soc, const struct soc_init_param *param)
+{
+    size_t hart_list_sz, i;
+    int error;
+
+    if (chip_soc == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    /* Allocate a hart list */
+    hart_list_sz = sizeof(struct cpu_hart) * param->nr_hart;
+    chip_soc->harts = malloc(hart_list_sz);
+    if (chip_soc->harts == NULL) {
+        errno = ENOMEM;
+        return -1;
+    }
+
+    /* Initialize each hart */
+    for (i = 0; i < param->nr_hart; ++i) {
+        error = cpu_init_hart(&chip_soc->harts[i]);
+        if (error < 0) {
+            free(chip_soc->harts);
+            return -1;
+        }
+    }
+
+    return 0;
+}
 
 int
 soc_init(struct soc_info *soc, const struct soc_init_param *param)
@@ -30,6 +62,13 @@ soc_init(struct soc_info *soc, const struct soc_init_param *param)
     error = lazybuf_init(&chip_soc->ram, param->ram_cap);
     if (error < 0) {
         perror("lazybuf_init");
+        free(chip_soc);
+        return -1;
+    }
+
+    error = soc_init_harts(chip_soc, param);
+    if (error < 0) {
+        perror("soc_init_harts");
         free(chip_soc);
         return -1;
     }
