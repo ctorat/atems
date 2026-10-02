@@ -4,10 +4,46 @@
  */
 
 #include <common/trace.h>
+#include <common/comdef.h>
 #include <bus/mainbus.h>
 #include <cpu/hart.h>
 #include <string.h>
 #include <errno.h>
+
+/* Safe regtab indexing macro */
+#define REG_STR(ID)             \
+    ((ID) >= NELEM(regtab))     \
+        ? "bad"                 \
+        : regtab[(ID)]
+
+/*
+ * Lookup table used to convert register IDs into
+ * strings.
+ *
+ * XXX: Do not index directly, instead use REG_STR()
+ */
+static const char *regtab[] = {
+    [REG_G0]  = "G0",
+    [REG_G1]  = "G1",
+    [REG_G2]  = "G2",
+    [REG_G3]  = "G3",
+    [REG_G4]  = "G4",
+    [REG_G5]  = "G5",
+    [REG_G6]  = "G6",
+    [REG_SP]  = "SP",
+    [REG_FP]  = "FP",
+    [REG_RA]  = "RA",
+    [REG_A0]  = "A0",
+    [REG_A1]  = "A1",
+    [REG_A2]  = "A2",
+    [REG_A3]  = "A3",
+    [REG_A4]  = "A4",
+    [REG_A5]  = "A5",
+    [REG_A6]  = "A6",
+    [REG_A7]  = "A7",
+    [REG_LST] = "LST",
+    [REG_TLS] = "TLS"
+};
 
 /*
  * Initialize per-hart registers
@@ -22,6 +58,67 @@ hart_init_regs(struct cpu_regs *regs)
     }
 
     memset(regs, 0, sizeof(*regs));
+}
+
+/*
+ * Read a register by ID
+ *
+ * @regs:  Register set to read
+ * @id:    ID of register to read
+ */
+static uint64_t
+hart_read_reg(struct cpu_regs *regs, reg_t id)
+{
+    if (regs == NULL || id >= REG_MAX) {
+        return 0;
+    }
+
+    /* Obtain global or argument registers */
+    if (id >= REG_G0 && id <= REG_G6)
+        return regs->gpreg[id];
+    if (id >= REG_A0 && id <= REG_A7)
+        return regs->argreg[id - REG_A0];
+
+    /* Obtain other registers */
+    switch (id) {
+    case REG_SP:
+        return regs->sp;
+    case REG_RA:
+        return regs->ra;
+    case REG_LST:
+        return regs->lst;
+    case REG_TLS:
+        return regs->tls;
+    default:
+        return 0;
+    }
+
+    return 0;
+}
+
+/*
+ * Dump the processor registers
+ *
+ * @regs: Registers to dump
+ */
+static void
+hart_dump_regs(struct cpu_regs *regs)
+{
+    reg_t i;
+
+    if (regs == NULL) {
+        return;
+    }
+
+    for (i = 0; i < REG_MAX; ++i) {
+        if ((i % 3) == 0 && i > 0) {
+            printf("\n");
+        }
+
+        printf("%s=%016lX ", REG_STR(i), hart_read_reg(regs, i));
+    }
+
+    printf("\n");
 }
 
 int
@@ -88,6 +185,11 @@ cpu_run_hart(struct cpu_hart *hart)
         default:
             trace_fatal("undefined opcode %02X\n", opcode);
             return -1;
+        }
+
+        /* Don't cause log spam if we are waiting */
+        if (opcode != OPCODE_WFI) {
+            hart_dump_regs(regs);
         }
     }
 
