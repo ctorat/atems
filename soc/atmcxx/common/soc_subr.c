@@ -86,6 +86,21 @@ soc_init(struct soc_info *soc, const struct soc_init_param *param)
     return 0;
 }
 
+int
+soc_emul_run(struct soc_info *soc)
+{
+    struct chip_soc_info *chip_soc;
+
+    if (soc == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    /* TODO: Support multi-hart processing */
+    chip_soc = soc->data;
+    return cpu_run_hart(&chip_soc->harts[0]);
+}
+
 void
 soc_destroy(struct soc_info *soc)
 {

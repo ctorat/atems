@@ -46,6 +46,15 @@ struct soc_init_param {
 int soc_init(struct soc_info *soc, const struct soc_init_param *param);
 
 /*
+ * Begin SoC emulation
+ *
+ * @soc:   SoC descriptor to begin emulating
+ *
+ * Returns zero on success
+ */
+int soc_emul_run(struct soc_info *soc);
+
+/*
  * Destroy a SoC descriptor
  *
  * @soc:  SoC descriptor to destroy

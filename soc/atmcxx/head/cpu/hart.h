@@ -9,6 +9,16 @@
 #include <stdint.h>
 #include <stddef.h>
 
+/* Instruction opcodes */
+#define OPCODE_NOP   0x01
+#define OPCODE_WFI   0x02
+#define OPCODE_SPW   0x03
+#define OPCODE_RDMSR 0x04
+#define OPCODE_WRMSR 0x05
+
+/* Instruction type */
+typedef uint32_t inst_t;
+
 /*
  * Represents the processor registers of the ATMCXX
  *
@@ -48,5 +58,14 @@ struct cpu_hart {
  * Returns zero on success.
  */
 int cpu_init_hart(struct cpu_hart *hart);
+
+/*
+ * Begin hart execution
+ *
+ * @hart:  Hart to run
+ *
+ * Returns non-zero values on fatal errors
+ */
+int cpu_run_hart(struct cpu_hart *hart);
 
 #endif  /* !CPU_HART_H */

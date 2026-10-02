@@ -64,6 +64,11 @@ vm_run(const struct rom_file *rfp, const struct soc_init_param *param)
         return;
     }
 
+    error = soc_emul_run(&soc);
+    if (error < 0) {
+        return;
+    }
+
     soc_destroy(&soc);
 }
 
