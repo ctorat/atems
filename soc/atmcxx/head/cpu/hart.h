@@ -15,9 +15,27 @@
 #define OPCODE_SPW   0x03
 #define OPCODE_RDMSR 0x04
 #define OPCODE_WRMSR 0x05
+#define OPCODE_ADDI  0x06
 
 /* Instruction type */
 typedef uint32_t inst_t;
+
+/*
+ * Represents the format of an A-type instruction.
+ *
+ * @opcode:   Operation code
+ * @rd:       Destination register
+ * @imm:      Immediate value
+ */
+union inst_a_type {
+    struct {
+        uint32_t opcode : 8;
+        uint32_t rd     : 5;
+        uint32_t rs1    : 5;
+        uint32_t imm    : 14;
+    };
+    uint32_t inst;
+};
 
 /*
  * Represents valid register IDs
