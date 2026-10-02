@@ -14,12 +14,14 @@
 /*
  * Chip specific SoC information
  *
- * @ram:    Random access memory
- * @harts:  Processor execution units
+ * @ram:        Random access memory
+ * @harts:      Processor execution units
+ * @nr_hart:    Number of harts in use
  */
 struct chip_soc_info {
     struct lazybuf ram;
     struct cpu_hart *harts;
+    size_t nr_hart;
 };
 
 #endif  /* !CHIP_SOC_H */

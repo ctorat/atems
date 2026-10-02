@@ -39,6 +39,7 @@ soc_init_harts(struct chip_soc_info *chip_soc, const struct soc_init_param *para
         }
     }
 
+    chip_soc->nr_hart = param->nr_hart;
     return 0;
 }
 
