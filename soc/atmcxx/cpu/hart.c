@@ -42,7 +42,8 @@ static const char *regtab[] = {
     [REG_A6]  = "A6",
     [REG_A7]  = "A7",
     [REG_LST] = "LST",
-    [REG_TLS] = "TLS"
+    [REG_TLS] = "TLS",
+    [REG_PC]  = "PC"
 };
 
 /*
@@ -89,6 +90,8 @@ hart_read_reg(struct cpu_regs *regs, reg_t id)
         return regs->lst;
     case REG_TLS:
         return regs->tls;
+    case REG_PC:
+        return regs->pc;
     default:
         return 0;
     }

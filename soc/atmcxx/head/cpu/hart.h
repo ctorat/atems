@@ -43,6 +43,7 @@ typedef enum {
     REG_A7  = 0x11,
     REG_LST = 0x12,
     REG_TLS = 0x13,
+    REG_PC  = 0x14,
     REG_MAX
 } reg_t;
 
