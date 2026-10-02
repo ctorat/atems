@@ -62,41 +62,63 @@ hart_init_regs(struct cpu_regs *regs)
 }
 
 /*
- * Read a register by ID
+ * Obtain a reference to a register by ID
  *
  * @regs:  Register set to read
+ * @id:    ID of register to read
+ */
+static uint64_t *
+hart_get_reg(struct cpu_regs *regs, reg_t id)
+{
+    if (regs == NULL || id >= REG_MAX) {
+        return NULL;
+    }
+
+    /* Obtain global or argument registers */
+    if (id >= REG_G0 && id <= REG_G6)
+        return &regs->gpreg[id];
+    if (id >= REG_A0 && id <= REG_A7)
+        return &regs->argreg[id - REG_A0];
+
+    /* Obtain other registers */
+    switch (id) {
+    case REG_SP:
+        return &regs->sp;
+    case REG_RA:
+        return &regs->ra;
+    case REG_LST:
+        return &regs->lst;
+    case REG_TLS:
+        return &regs->tls;
+    case REG_PC:
+        return &regs->pc;
+    default:
+        return NULL;
+    }
+
+    return NULL;
+}
+
+/*
+ * Read a specific register by ID
+ *
+ * @regs:  Register set to read from
  * @id:    ID of register to read
  */
 static uint64_t
 hart_read_reg(struct cpu_regs *regs, reg_t id)
 {
+    uint64_t *regp;
+
     if (regs == NULL || id >= REG_MAX) {
         return 0;
     }
 
-    /* Obtain global or argument registers */
-    if (id >= REG_G0 && id <= REG_G6)
-        return regs->gpreg[id];
-    if (id >= REG_A0 && id <= REG_A7)
-        return regs->argreg[id - REG_A0];
-
-    /* Obtain other registers */
-    switch (id) {
-    case REG_SP:
-        return regs->sp;
-    case REG_RA:
-        return regs->ra;
-    case REG_LST:
-        return regs->lst;
-    case REG_TLS:
-        return regs->tls;
-    case REG_PC:
-        return regs->pc;
-    default:
+    if ((regp = hart_get_reg(regs, id)) == NULL) {
         return 0;
     }
 
-    return 0;
+    return *regp;
 }
 
 /*
